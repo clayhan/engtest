@@ -1,20 +1,20 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+
+import { throttle } from 'lodash';
 import { SocketFeed, DeltaType } from '../lib/constants';
 
 import OrderbookTable from './OrderbookTable';
-
-import { throttle } from 'lodash';
 
 const Orderbook = () => {
   const bids = useRef([]);
   const asks = useRef([]);
 
-  const [, setDummy] = useState(1);
+  const [, setRerender] = useState(1);
   const throttledRerender = useCallback(
     throttle(() => {
-      setDummy((x) => x + 1);
-    }, 750),
-    [setDummy]
+      setRerender((x) => x + 1);
+    }, 500),
+    [setRerender]
   );
 
   const handleOrdersUpdate = (originalOrders, newOrders) => {
@@ -80,8 +80,14 @@ const Orderbook = () => {
 
   return (
     <div style={{ display: 'flex' }}>
-      <OrderbookTable deltaType={DeltaType.BIDS} orders={bids.current} />
-      <OrderbookTable deltaType={DeltaType.ASKS} orders={asks.current} />
+      <OrderbookTable
+        deltaType={DeltaType.BIDS}
+        orders={bids.current.slice(0, 10)}
+      />
+      <OrderbookTable
+        deltaType={DeltaType.ASKS}
+        orders={asks.current.slice(0, 10)}
+      />
     </div>
   );
 };

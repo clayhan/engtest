@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import { SocketFeed, PriceType } from '../../lib/constants';
+import { SocketFeed, PriceType } from '../lib/constants';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -55,10 +55,10 @@ const Orderbook = () => {
         setAsks(data.asks);
       } else if (data.feed === SocketFeed.BOOK) {
         if (data.bids?.length > 0) {
-          debounce(() => setNewBids(data.bids), 1000);
+          setNewBids(data.bids);
         }
         if (data.asks?.length > 0) {
-          debounce(() => setNewAsks(data.asks), 1000);
+          setNewAsks(data.asks);
         }
       }
     });

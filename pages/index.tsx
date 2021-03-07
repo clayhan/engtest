@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import Orderbook from './components/Orderbook';
+import Orderbook from '../components/Orderbook';
 
 export const Home = (): JSX.Element => (
   <div className="container">

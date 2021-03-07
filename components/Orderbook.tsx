@@ -1,39 +1,53 @@
-import React, { useEffect, useState, Fragment } from 'react';
-import { SocketFeed, PriceType } from '../lib/constants';
-
-import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { SocketFeed, DeltaType } from '../lib/constants';
 
 import OrderbookTable from './OrderbookTable';
 
+import { throttle } from 'lodash';
+
 const Orderbook = () => {
-  const [bids, setBids] = useState<[]>([]);
-  const [newBids, setNewBids] = useState([]);
+  const bids = useRef([]);
+  const asks = useRef([]);
 
-  const [asks, setAsks] = useState<[]>([]);
-  const [newAsks, setNewAsks] = useState([]);
+  const [, setDummy] = useState(1);
+  const throttledRerender = useCallback(
+    throttle(() => {
+      setDummy((x) => x + 1);
+    }, 500),
+    [setDummy]
+  );
 
-  const handleNewPrices = (priceType: string) => {
-    const currentPrices = priceType === PriceType.BIDS ? [...bids] : [...asks];
-    const newPrices = priceType === PriceType.BIDS ? newBids : newAsks;
-
-    newPrices.forEach((newPrice) => {
-      let addPrice = true;
-      const price = newPrice[0];
-      for (let i = 0; i < currentPrices.length; i++) {
-        if (price === currentPrices[i][0]) {
-          currentPrices[i][1] = newPrice[1];
-          addPrice = false;
+  const handleOrdersUpdate = (originalOrders, newOrders) => {
+    newOrders.forEach((newOrder) => {
+      let addOrder = true;
+      const newOrderPrice = newOrder[0];
+      for (let i = 0; i < originalOrders.length; i++) {
+        if (newOrderPrice === originalOrders[i][0]) {
+          originalOrders[i][1] = newOrder[1];
+          addOrder = false;
           break;
         }
       }
-
-      if (addPrice) {
-        currentPrices.push(newPrice);
+      if (addOrder) {
+        originalOrders.push(newOrder);
       }
     });
+    return originalOrders.filter((order) => order[1] !== 0);
+  };
 
-    const handlerToUse = priceType === PriceType.BIDS ? setBids : setAsks;
-    handlerToUse(currentPrices.filter((price) => price[1] !== 0).sort());
+  const handleDelta = (deltaData) => {
+    const newBids = deltaData.bids;
+    const newAsks = deltaData.asks;
+
+    if (newBids?.length > 0) {
+      bids.current = handleOrdersUpdate([...bids.current], newBids);
+    }
+
+    if (newAsks?.length > 0) {
+      asks.current = handleOrdersUpdate([...asks.current], newAsks);
+    }
+
+    throttledRerender();
   };
 
   useEffect(() => {
@@ -51,43 +65,25 @@ const Orderbook = () => {
     socket.addEventListener('message', function (event) {
       const data = JSON.parse(event.data);
       if (data.feed === SocketFeed.SNAPSHOT) {
-        setBids(data.bids);
-        setAsks(data.asks);
+        bids.current = bids.current.concat(data.bids);
+        asks.current = asks.current.concat(data.asks);
+        throttledRerender();
       } else if (data.feed === SocketFeed.BOOK) {
-        if (data.bids?.length > 0) {
-          setNewBids(data.bids);
-        }
-        if (data.asks?.length > 0) {
-          setNewAsks(data.asks);
-        }
+        handleDelta(data);
       }
     });
 
-    // cleanup here later
+    return () => {
+      socket.close();
+    };
   }, []);
-
-  useEffect(() => {
-    handleNewPrices(PriceType.BIDS);
-  }, [newBids]);
-
-  useEffect(() => {
-    handleNewPrices(PriceType.ASKS);
-  }, [newAsks]);
 
   return (
     <div style={{ display: 'flex' }}>
-      {bids.length === 0 && asks.length === 0 ? (
-        <CircularProgress />
-      ) : (
-        <Fragment>
-          <OrderbookTable priceType={PriceType.BIDS} prices={bids} />
-          <OrderbookTable priceType={PriceType.ASKS} prices={asks} />
-        </Fragment>
-      )}
+      <OrderbookTable deltaType={DeltaType.BIDS} orders={bids.current} />
+      <OrderbookTable deltaType={DeltaType.ASKS} orders={asks.current} />
     </div>
   );
 };
 
 export default Orderbook;
-
-// {"feed":"book_ui_1","product_id":"PI_XBTUSD","bids":[],"asks":[[49147.5,2388590}

@@ -3,7 +3,7 @@ export enum SocketFeed {
   BOOK = 'book_ui_1',
 }
 
-export enum PriceType {
+export enum DeltaType {
   BIDS = 'bids',
   ASKS = 'asks',
 }

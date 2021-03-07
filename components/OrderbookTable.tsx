@@ -1,4 +1,6 @@
-import { PriceType } from '../lib/constants';
+import { useEffect } from 'react';
+
+import { DeltaType } from '../lib/constants';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -12,8 +14,8 @@ import Paper from '@material-ui/core/Paper';
 import PriceRow from './PriceRow';
 
 interface IProps {
-  priceType: string;
-  prices: [];
+  deltaType: DeltaType;
+  orders: [];
 }
 
 const useStyles = makeStyles({
@@ -28,13 +30,13 @@ const useStyles = makeStyles({
 
 const OrderbookTable = (props: IProps) => {
   const classes = useStyles();
-  const { prices } = props;
+  const { orders } = props;
 
+  const updatedOrders = [...orders].sort();
   let total = 0;
-
-  prices.forEach((price) => {
-    total += price[1];
-    price[2] = total;
+  updatedOrders.forEach((order) => {
+    total += order[1];
+    order[2] = total;
   });
 
   return (
@@ -48,16 +50,18 @@ const OrderbookTable = (props: IProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {prices.reverse().map((price) => (
-            <TableRow key={price[0]}>
-              <TableCell component="th" scope="row">
-                {price[0]}
-              </TableCell>
-              <TableCell align="right">{price[1]}</TableCell>
-              <TableCell align="right">{price[2]}</TableCell>
-              <span className={classes.rowColor}></span>
-            </TableRow>
-          ))}
+          {updatedOrders.reverse().map((order) => {
+            return (
+              <TableRow key={`${order[0]}-${order[1]}`}>
+                <TableCell component="th" scope="row">
+                  {order[0]}
+                </TableCell>
+                <TableCell align="right">{order[1]}</TableCell>
+                <TableCell align="right">{order[2]}</TableCell>
+                <span className={classes.rowColor}></span>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>

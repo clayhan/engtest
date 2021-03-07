@@ -13,7 +13,7 @@ const Orderbook = () => {
   const throttledRerender = useCallback(
     throttle(() => {
       setDummy((x) => x + 1);
-    }, 500),
+    }, 750),
     [setDummy]
   );
 

@@ -20,7 +20,7 @@ interface IProps {
 
 const useStyles = makeStyles({
   table: {
-    minWidth: 650,
+    // minWidth: 650,
   },
   rowColor: {
     backgroundColor: 'blue',
@@ -34,14 +34,17 @@ const OrderbookTable = (props: IProps) => {
 
   const updatedOrders = [...orders].sort();
   let total = 0;
-  updatedOrders.forEach((order) => {
+  updatedOrders.forEach((order: [number, number]) => {
     total += order[1];
-    order[2] = total;
+    order[2] = total.toLocaleString();
   });
 
   return (
     <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
+      <Table
+        className={classes.table}
+        aria-label={`Orderbook - ${props.deltaType}`}
+      >
         <TableHead>
           <TableRow>
             <TableCell>PRICE</TableCell>
@@ -54,10 +57,10 @@ const OrderbookTable = (props: IProps) => {
             return (
               <TableRow key={`${order[0]}-${order[1]}`}>
                 <TableCell component="th" scope="row">
-                  {order[0]}
+                  {order[0].toFixed(2).toLocaleString()}
                 </TableCell>
-                <TableCell align="right">{order[1]}</TableCell>
-                <TableCell align="right">{order[2]}</TableCell>
+                <TableCell align="right">{order[1].toLocaleString()}</TableCell>
+                <TableCell align="right">{order[2].toLocaleString()}</TableCell>
                 <span className={classes.rowColor}></span>
               </TableRow>
             );

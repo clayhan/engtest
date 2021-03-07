@@ -4,7 +4,7 @@ import Orderbook from '../components/Orderbook';
 export const Home = (): JSX.Element => (
   <div className="container">
     <Head>
-      <title>Create Next App</title>
+      <title>Orderbook</title>
       <link rel="icon" href="/favicon.ico" />
     </Head>
 

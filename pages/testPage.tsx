@@ -1,9 +1,9 @@
 import Demo from '../components/VirtualizedTable';
 
-const Test = () => (
+const testPage = () => (
   <div>
     <Demo />
   </div>
 );
 
-export default Test;
+export default testPage;

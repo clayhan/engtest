@@ -51,11 +51,11 @@ const PriceRow = (props: IProps) => {
       )}
       {deltaType === DeltaType.ASKS && (
         <Fragment>
-          <TableCell align="right" className={classes.totalTc}>
+          <TableCell component="th" className={classes.totalTc}>
             {total}
           </TableCell>
           <TableCell align="right">{size}</TableCell>
-          <TableCell component="th" scope="row">
+          <TableCell align="right" scope="row">
             {price}
           </TableCell>
         </Fragment>

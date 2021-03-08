@@ -1,11 +1,22 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
 import { throttle } from 'lodash';
 import { SocketFeed, DeltaType } from '../lib/constants';
 
 import OrderbookTable from './OrderbookTable';
 
+const useStyles = makeStyles({
+  wrapper: {
+    display: 'flex',
+    '@media(max-width: 768px)': {
+      flexDirection: 'column',
+    },
+  },
+});
+
 const Orderbook = () => {
+  const classes = useStyles();
   const bids = useRef([]);
   const asks = useRef([]);
 
@@ -79,7 +90,7 @@ const Orderbook = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div className={classes.wrapper}>
       <OrderbookTable
         deltaType={DeltaType.BIDS}
         orders={bids.current.slice(0, 10)}

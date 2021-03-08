@@ -73,7 +73,7 @@ const OrderbookTable = (props: IProps) => {
               )}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody data-spec="orderbook-table-body">
             {updatedOrders.length > 0
               ? updatedOrders.map((order) => {
                   return (

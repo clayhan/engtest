@@ -104,7 +104,8 @@ const Orderbook = (): JSX.Element => {
 
   return (
     <div>
-      <Typography variant="body1" gutterBottom>
+      {/* TODO */}
+      {/* <Typography variant="body1" gutterBottom>
         Price Level Grouping
       </Typography>
       <Slider
@@ -116,17 +117,15 @@ const Orderbook = (): JSX.Element => {
         marks
         min={1}
         max={20}
-      />
+      /> */}
       <div className={classes.wrapper}>
         <OrderbookTable
           deltaType={DeltaType.BIDS}
-          // orders={bids.current.slice(0, sliderValue) as []}
-          orders={bids.current}
+          orders={bids.current as []}
         />
         <OrderbookTable
           deltaType={DeltaType.ASKS}
-          // orders={asks.current.slice(0, sliderValue) as []}
-          orders={asks.current}
+          orders={asks.current as []}
         />
       </div>
     </div>

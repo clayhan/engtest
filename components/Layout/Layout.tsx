@@ -7,6 +7,7 @@ import Link from 'next/link';
 import IconButton from '@material-ui/core/IconButton';
 import HomeIcon from '@material-ui/icons/Home';
 import BarChartIcon from '@material-ui/icons/BarChart';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,8 +30,9 @@ const Layout = (props: IProps) => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Orderbook
+            Orderbook <MenuBookIcon style={{ marginBottom: '-3px' }} />
           </Typography>
+
           <Link href="/">
             <IconButton
               edge="start"

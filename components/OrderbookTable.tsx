@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { makeStyles, withStyles, createStyles } from '@material-ui/core/styles';
 import { DeltaType } from '../lib/constants';
 
@@ -12,6 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import OrderRow from './OrderRow';
 import SkeletonRow from './SkeletonRow';
+import GavelIcon from '@material-ui/icons/Gavel';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
 interface IProps {
   deltaType: DeltaType;
@@ -25,6 +28,15 @@ const useStyles = makeStyles({
   tableHeader: {
     width: '100%',
     textAlign: 'center',
+  },
+  root: {
+    width: '100%',
+  },
+  container: {
+    maxHeight: 500,
+  },
+  tableHeaderWrapper: {
+    display: 'flex',
   },
 });
 
@@ -91,38 +103,43 @@ const OrderbookTable = (props: IProps): JSX.Element => {
       <Typography className={classes.tableHeader} variant="h6" gutterBottom>
         {deltaType === DeltaType.ASKS ? 'Asks' : 'Bids'}
       </Typography>
-      <TableContainer component={Paper}>
-        <Table
-          className={classes.table}
-          aria-label={`Orderbook - ${props.deltaType}`}
-        >
-          <TableHead>
-            <TableRow>
-              {deltaType === DeltaType.BIDS
-                ? rows.map((component, index) => component(index !== 0))
-                : rows
-                    .reverse()
-                    .map((component, index) => component(index !== 0))}
-            </TableRow>
-          </TableHead>
-          <TableBody data-spec="orderbook-table-body">
-            {updatedOrders.length > 0
-              ? updatedOrders.map((order: [number, number, number, number]) => {
-                  return (
-                    <OrderRow
-                      key={order[0]}
-                      price={order[0].toFixed(2).toLocaleString()}
-                      size={order[1].toLocaleString()}
-                      total={order[2].toLocaleString()}
-                      deltaType={deltaType}
-                      calculate={order[3]}
-                    />
-                  );
-                })
-              : [...Array(10)].map((index) => <SkeletonRow key={index} />)}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Paper className={classes.root}>
+        <TableContainer className={classes.container}>
+          <Table
+            stickyHeader
+            className={classes.table}
+            aria-label={`Orderbook - ${props.deltaType}`}
+          >
+            <TableHead>
+              <TableRow>
+                {deltaType === DeltaType.BIDS
+                  ? rows.map((component, index) => component(index !== 0))
+                  : rows
+                      .reverse()
+                      .map((component, index) => component(index !== 0))}
+              </TableRow>
+            </TableHead>
+            <TableBody data-spec="orderbook-table-body">
+              {updatedOrders.length > 0
+                ? updatedOrders.map(
+                    (order: [number, number, number, number]) => {
+                      return (
+                        <OrderRow
+                          key={order[0]}
+                          price={order[0].toFixed(2).toLocaleString()}
+                          size={order[1].toLocaleString()}
+                          total={order[2].toLocaleString()}
+                          deltaType={deltaType}
+                          calculate={order[3]}
+                        />
+                      );
+                    }
+                  )
+                : [...Array(9)].map((index) => <SkeletonRow key={index} />)}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </div>
   );
 };

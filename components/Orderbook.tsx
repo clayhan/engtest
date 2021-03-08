@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-
 import { throttle } from 'lodash';
 import { SocketFeed, DeltaType } from '../lib/constants';
 
@@ -17,18 +16,12 @@ const useStyles = makeStyles({
   },
 });
 
-const Orderbook = () => {
+const Orderbook = (): JSX.Element => {
   const classes = useStyles();
   const bids = useRef([]);
   const asks = useRef([]);
 
   const [sliderValue, setSliderValue] = useState(10);
-
-  const handleSliderValue = (value: number) => {
-    if (value !== sliderValue) {
-      setSliderValue(value);
-    }
-  };
 
   const [, setRerender] = useState(1);
   const throttledRerender = useCallback(
@@ -37,6 +30,12 @@ const Orderbook = () => {
     }, 500),
     [setRerender]
   );
+
+  const handleSliderValue = (value: number) => {
+    if (value !== sliderValue) {
+      setSliderValue(value);
+    }
+  };
 
   const handleOrdersUpdate = (originalOrders, newOrders) => {
     newOrders.forEach((newOrder) => {
@@ -63,7 +62,6 @@ const Orderbook = () => {
     if (newBids?.length > 0) {
       bids.current = handleOrdersUpdate([...bids.current], newBids);
     }
-
     if (newAsks?.length > 0) {
       asks.current = handleOrdersUpdate([...asks.current], newAsks);
     }
@@ -73,7 +71,7 @@ const Orderbook = () => {
 
   useEffect(() => {
     const socket = new WebSocket('wss://www.cryptofacilities.com/ws/v1');
-    socket.addEventListener('open', function (event) {
+    socket.addEventListener('open', function () {
       const message = {
         event: 'subscribe',
         feed: 'book_ui_1',
@@ -89,7 +87,10 @@ const Orderbook = () => {
         bids.current = bids.current.concat(data.bids);
         asks.current = asks.current.concat(data.asks);
         throttledRerender();
-      } else if (data.feed === SocketFeed.BOOK) {
+      } else if (
+        data.feed === SocketFeed.BOOK &&
+        (bids.current.length > 0 || asks.current.length > 0)
+      ) {
         handleDelta(data);
       }
     });

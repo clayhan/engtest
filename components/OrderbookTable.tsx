@@ -1,6 +1,4 @@
-import { Fragment } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-
+import { makeStyles, withStyles, createStyles } from '@material-ui/core/styles';
 import { DeltaType } from '../lib/constants';
 
 import Table from '@material-ui/core/Table';
@@ -11,7 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-
+import Tooltip from '@material-ui/core/Tooltip';
 import OrderRow from './OrderRow';
 import SkeletonRow from './SkeletonRow';
 
@@ -30,20 +28,56 @@ const useStyles = makeStyles({
   },
 });
 
-const OrderbookTable = (props: IProps) => {
+const StyledTableCell = withStyles((theme: Theme) =>
+  createStyles({
+    head: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    body: {
+      fontSize: 14,
+    },
+  })
+)(TableCell);
+
+const OrderbookTable = (props: IProps): JSX.Element => {
   const classes = useStyles();
   const { orders, deltaType } = props;
 
   const updatedOrders = [...orders].sort();
   let total = 0;
-  updatedOrders.forEach((order: [number, number]) => {
+  updatedOrders.forEach((order: [number, number, number?]) => {
     total += order[1];
     order[2] = total;
   });
 
-  updatedOrders.forEach((order: [number, number]) => {
+  updatedOrders.forEach((order: [number, number, number?, number?]) => {
     order[3] = (order[2] / total) * 100;
   });
+
+  const rows = [
+    (align: boolean) => (
+      <Tooltip title={`Price for ${deltaType}`} arrow placement="top-start">
+        <StyledTableCell align={align ? 'right' : 'inherit'}>
+          PRICE
+        </StyledTableCell>
+      </Tooltip>
+    ),
+    (align: boolean) => (
+      <Tooltip title={`Size for ${deltaType}`} arrow placement="top-start">
+        <StyledTableCell align={align ? 'right' : 'inherit'}>
+          SIZE
+        </StyledTableCell>
+      </Tooltip>
+    ),
+    (align: boolean) => (
+      <Tooltip title={`Total for ${deltaType}`} arrow placement="top-start">
+        <StyledTableCell align={align ? 'right' : 'inherit'}>
+          TOTAL
+        </StyledTableCell>
+      </Tooltip>
+    ),
+  ];
 
   return (
     <div>
@@ -57,25 +91,16 @@ const OrderbookTable = (props: IProps) => {
         >
           <TableHead>
             <TableRow>
-              {deltaType === DeltaType.BIDS && (
-                <Fragment>
-                  <TableCell>PRICE</TableCell>
-                  <TableCell align="right">SIZE</TableCell>
-                  <TableCell align="right">TOTAL</TableCell>
-                </Fragment>
-              )}
-              {deltaType === DeltaType.ASKS && (
-                <Fragment>
-                  <TableCell>TOTAL</TableCell>
-                  <TableCell align="right">SIZE</TableCell>
-                  <TableCell align="right">PRICE</TableCell>
-                </Fragment>
-              )}
+              {deltaType === DeltaType.BIDS
+                ? rows.map((component, index) => component(index !== 0))
+                : rows
+                    .reverse()
+                    .map((component, index) => component(index !== 0))}
             </TableRow>
           </TableHead>
           <TableBody data-spec="orderbook-table-body">
             {updatedOrders.length > 0
-              ? updatedOrders.map((order) => {
+              ? updatedOrders.map((order: [number, number, number, number]) => {
                   return (
                     <OrderRow
                       key={order[0]}
@@ -87,7 +112,7 @@ const OrderbookTable = (props: IProps) => {
                     />
                   );
                 })
-              : [...Array(10)].map(() => <SkeletonRow />)}
+              : [...Array(10)].map((index) => <SkeletonRow key={index} />)}
           </TableBody>
         </Table>
       </TableContainer>

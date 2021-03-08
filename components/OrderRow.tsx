@@ -1,8 +1,7 @@
 import { Fragment } from 'react';
-
 import { DeltaType } from '../lib/constants';
-
 import { makeStyles } from '@material-ui/core/styles';
+
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 
@@ -35,7 +34,7 @@ const useStyles = makeStyles({
   }),
 });
 
-const PriceRow = (props: IProps) => {
+const PriceRow = (props: IProps): JSX.Element => {
   const { price, size, total, deltaType, calculate } = props;
   const classes = useStyles({ deltaType, calculate });
 

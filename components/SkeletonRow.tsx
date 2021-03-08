@@ -2,7 +2,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import Skeleton from '@material-ui/lab/Skeleton';
 
-const SkeletonRow = () => {
+const SkeletonRow = (): JSX.Element => {
   return (
     <TableRow>
       <TableCell component="th" scope="row">

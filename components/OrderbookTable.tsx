@@ -1,4 +1,3 @@
-import { Fragment } from 'react';
 import { makeStyles, withStyles, createStyles } from '@material-ui/core/styles';
 import { DeltaType } from '../lib/constants';
 
@@ -13,8 +12,6 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import OrderRow from './OrderRow';
 import SkeletonRow from './SkeletonRow';
-import GavelIcon from '@material-ui/icons/Gavel';
-import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
 interface IProps {
   deltaType: DeltaType;
@@ -33,7 +30,7 @@ const useStyles = makeStyles({
     width: '100%',
   },
   container: {
-    maxHeight: 500,
+    maxHeight: 450,
   },
   tableHeaderWrapper: {
     display: 'flex',
@@ -73,6 +70,8 @@ const OrderbookTable = (props: IProps): JSX.Element => {
   updatedOrders.forEach((order: [number, number, number?, number?]) => {
     order[3] = (order[2] / total) * 100;
   });
+
+  const appendSkeletonRows = 8 - updatedOrders.length;
 
   const rows = [
     (align: boolean) => (
@@ -121,8 +120,8 @@ const OrderbookTable = (props: IProps): JSX.Element => {
             </TableHead>
             <TableBody data-spec="orderbook-table-body">
               {updatedOrders.length > 0
-                ? updatedOrders.map(
-                    (order: [number, number, number, number]) => {
+                ? updatedOrders
+                    .map((order: [number, number, number, number]) => {
                       return (
                         <OrderRow
                           key={order[0]}
@@ -133,9 +132,15 @@ const OrderbookTable = (props: IProps): JSX.Element => {
                           calculate={order[3]}
                         />
                       );
-                    }
-                  )
-                : [...Array(9)].map((index) => <SkeletonRow key={index} />)}
+                    })
+                    .concat(
+                      appendSkeletonRows > 0
+                        ? [...Array(appendSkeletonRows)].map((index) => (
+                            <SkeletonRow key={index} />
+                          ))
+                        : []
+                    )
+                : [...Array(8)].map((index) => <SkeletonRow key={index} />)}
             </TableBody>
           </Table>
         </TableContainer>

@@ -2,9 +2,7 @@
 
 The biggest improvements that I would like to have made (outside of general styling) was implementing react-virtualized to make the application more performant. This would allow users to render rows of my orderbook table as they scroll through it, as opposed to having to do the serious rendering up front.
 
-The feature I most wanted to add was Price Level Grouping so that I could allow the user to select a range and lump the prices together, as opposed to seeing a large page of prices.
-
-Code wise, I wish I was able to get around to more thoughtful unit tests to ensure my code is sound, and I would have liked to try breaking the app and developing error handling/error states so that the app could fail gracefully. I also would have liked to have abstracted my component code to be even more clean/modular.
+Code wise, I wish I was able to get around to more thoughtful unit tests to ensure my code is sound, more strict TypeScript typing, and I would have liked to try breaking the app even more and developing error handling/error states so that the app could fail gracefully. I also would have liked to have abstracted my component code to be even more clean/modular.
 
 ## 2. What would you have done differently if you knew this page was going to get thousands of views per second vs per week?
 

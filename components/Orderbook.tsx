@@ -14,14 +14,36 @@ const useStyles = makeStyles({
       flexDirection: 'column',
     },
   },
+  pageHeaderWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
+
+const groupBy = (ary, keyFunc) => {
+  const r = {};
+  ary.forEach(function (x) {
+    const currentPrice = x[0];
+    const y = keyFunc(currentPrice);
+    r[y] = (r[y] || []).concat([x]);
+  });
+  return Object.keys(r).map(function (y) {
+    return r[y];
+  });
+};
 
 const Orderbook = (): JSX.Element => {
   const classes = useStyles();
+
   const bids = useRef([]);
   const asks = useRef([]);
 
-  const [sliderValue, setSliderValue] = useState(10);
+  const groupedBids = useRef([]);
+  const groupedAsks = useRef([]);
+
+  const groupingSliderValue = useRef(0);
 
   // This hook is for triggering a rerender
   const [, setRerender] = useState(1);
@@ -33,9 +55,29 @@ const Orderbook = (): JSX.Element => {
   );
 
   const handleSliderValue = (value: number) => {
-    if (value !== sliderValue) {
-      setSliderValue(value);
+    if (value !== groupingSliderValue.current) {
+      groupingSliderValue.current = value;
     }
+  };
+
+  const handlePriceGrouping = () => {
+    // Helper callbacks
+    const roundingFunc = (x) => Math.floor(x / groupingSliderValue.current);
+    const groupingCb = (group) => {
+      let totalSize = 0;
+      group.forEach((order) => {
+        totalSize += order[1];
+      });
+      return [Math.floor(group[0][0]), totalSize];
+    };
+
+    const groupingBids = groupBy([...bids.current], roundingFunc);
+    const groupingAsks = groupBy([...asks.current], roundingFunc);
+
+    groupedBids.current = groupingBids.map(groupingCb);
+    groupedAsks.current = groupingAsks.map(groupingCb);
+
+    throttledRerender();
   };
 
   const handleOrdersUpdate = (originalOrders, newOrders) => {
@@ -68,7 +110,11 @@ const Orderbook = (): JSX.Element => {
       asks.current = handleOrdersUpdate([...asks.current], newAsks);
     }
 
-    throttledRerender();
+    if (groupingSliderValue.current > 0) {
+      handlePriceGrouping();
+    } else {
+      throttledRerender();
+    }
   };
 
   useEffect(() => {
@@ -104,28 +150,43 @@ const Orderbook = (): JSX.Element => {
 
   return (
     <div>
-      {/* TODO */}
-      {/* <Typography variant="body1" gutterBottom>
-        Price Level Grouping
-      </Typography>
-      <Slider
-        defaultValue={10}
-        getAriaValueText={handleSliderValue}
-        aria-labelledby="discrete-slider"
-        valueLabelDisplay="auto"
-        step={1}
-        marks
-        min={1}
-        max={20}
-      /> */}
+      <div className={classes.pageHeaderWrapper}>
+        <Typography variant="h4" gutterBottom>
+          XBT/USD
+        </Typography>
+        <Typography variant="h6" gutterBottom>
+          Price Level Grouping
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          Adjust the granularity of the order book using the slider.
+        </Typography>
+        <Slider
+          defaultValue={0}
+          getAriaValueText={handleSliderValue}
+          aria-labelledby="discrete-slider"
+          valueLabelDisplay="auto"
+          step={10}
+          marks
+          min={0}
+          max={100}
+        />
+      </div>
       <div className={classes.wrapper}>
         <OrderbookTable
           deltaType={DeltaType.BIDS}
-          orders={bids.current as []}
+          orders={
+            groupingSliderValue.current > 0
+              ? (groupedBids.current as [])
+              : (bids.current as [])
+          }
         />
         <OrderbookTable
           deltaType={DeltaType.ASKS}
-          orders={asks.current as []}
+          orders={
+            groupingSliderValue.current > 0
+              ? (groupedAsks.current as [])
+              : (asks.current as [])
+          }
         />
       </div>
     </div>

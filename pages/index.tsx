@@ -11,10 +11,10 @@ const Home = (): JSX.Element => (
           Welcome to Orderbook.
         </Typography>
         <Typography variant="h4" gutterBottom>
-          See live digital currency bids and asks.
+          See live XBT bids and asks.
         </Typography>
         <Typography variant="h4" gutterBottom>
-          Fast. Secure. Powerful.
+          Digital Currency. Fast. Secure.
         </Typography>
         <Link href="/orders">
           <Button variant="contained" color="primary">

@@ -23,6 +23,7 @@ const Orderbook = (): JSX.Element => {
 
   const [sliderValue, setSliderValue] = useState(10);
 
+  // This hook is for triggering a rerender
   const [, setRerender] = useState(1);
   const throttledRerender = useCallback(
     throttle(() => {
@@ -42,6 +43,7 @@ const Orderbook = (): JSX.Element => {
       let addOrder = true;
       const newOrderPrice = newOrder[0];
       for (let i = 0; i < originalOrders.length; i++) {
+        // If the order price already exists, we want to replace it with the new order price
         if (newOrderPrice === originalOrders[i][0]) {
           originalOrders[i][1] = newOrder[1];
           addOrder = false;
@@ -103,7 +105,7 @@ const Orderbook = (): JSX.Element => {
   return (
     <div>
       <Typography variant="body1" gutterBottom>
-        Adjust the number of displayed orders by using the slider.
+        Price Level Grouping
       </Typography>
       <Slider
         defaultValue={10}
@@ -118,11 +120,13 @@ const Orderbook = (): JSX.Element => {
       <div className={classes.wrapper}>
         <OrderbookTable
           deltaType={DeltaType.BIDS}
-          orders={bids.current.slice(0, sliderValue)}
+          // orders={bids.current.slice(0, sliderValue) as []}
+          orders={bids.current}
         />
         <OrderbookTable
           deltaType={DeltaType.ASKS}
-          orders={asks.current.slice(0, sliderValue)}
+          // orders={asks.current.slice(0, sliderValue) as []}
+          orders={asks.current}
         />
       </div>
     </div>

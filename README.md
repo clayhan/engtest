@@ -1,4 +1,4 @@
-# Orderbook application
+# Orderbook
 
 Primary technologies used:
 

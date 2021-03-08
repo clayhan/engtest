@@ -44,13 +44,20 @@ const OrderbookTable = (props: IProps): JSX.Element => {
   const classes = useStyles();
   const { orders, deltaType } = props;
 
-  const updatedOrders = [...orders].sort();
+  // Create a copy of the orders prop, then ensure the prices are sorted
+  const updatedOrders =
+    deltaType === DeltaType.BIDS
+      ? [...orders].sort().reverse()
+      : [...orders].sort();
+
+  // Calculate the total and assign the "current total" to the appropriate order
   let total = 0;
   updatedOrders.forEach((order: [number, number, number?]) => {
     total += order[1];
     order[2] = total;
   });
 
+  // Calculate the horizontal bars
   updatedOrders.forEach((order: [number, number, number?, number?]) => {
     order[3] = (order[2] / total) * 100;
   });

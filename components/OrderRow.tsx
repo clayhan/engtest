@@ -26,6 +26,9 @@ const useStyles = makeStyles({
         ? `90deg, #492631 ${props.calculate}%, transparent 0`
         : `270deg, #163E2D ${props.calculate}%, transparent 0`
     })`,
+    '&:hover': {
+      background: 'none',
+    },
   }),
   totalTc: (props: StyledProps) => ({
     color: `${props.deltaType === DeltaType.ASKS ? '#FA5868' : '#218775'}`,
@@ -37,7 +40,7 @@ const PriceRow = (props: IProps) => {
   const classes = useStyles({ deltaType, calculate });
 
   return (
-    <TableRow className={classes.tr}>
+    <TableRow className={classes.tr} hover>
       {deltaType === DeltaType.BIDS && (
         <Fragment>
           <TableCell component="th" scope="row">

@@ -1,28 +1,28 @@
-import Head from 'next/head';
-import Orderbook from '../components/Orderbook';
+import Layout from '../components/Layout/Layout';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Link from 'next/link';
 
-export const Home = (): JSX.Element => (
-  <div className="container">
-    <Head>
-      <title>Orderbook</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
-
-    <main>
-      <Orderbook />
-    </main>
-
-    <footer>
-      {/* <a
-        href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Powered by{' '}
-        <Image src="/vercel.svg" alt="Vercel Logo" height={'32'} width={'64'} />
-      </a> */}
-    </footer>
-
+const Home = (): JSX.Element => (
+  <Layout>
+    <div className="container">
+      <main>
+        <Typography variant="h2" component="h2">
+          Welcome to Orderbook.
+        </Typography>
+        <Typography variant="h4" gutterBottom>
+          See live digital currency bids and asks.
+        </Typography>
+        <Typography variant="h4" gutterBottom>
+          Fast. Secure. Powerful.
+        </Typography>
+        <Link href="/orders">
+          <Button variant="contained" color="primary">
+            Get Started
+          </Button>
+        </Link>
+      </main>
+    </div>
     <style jsx>{`
       .container {
         min-height: 100vh;
@@ -149,7 +149,6 @@ export const Home = (): JSX.Element => (
         }
       }
     `}</style>
-
     <style jsx global>{`
       html,
       body {
@@ -163,7 +162,7 @@ export const Home = (): JSX.Element => (
         box-sizing: border-box;
       }
     `}</style>
-  </div>
+  </Layout>
 );
 
 export default Home;

@@ -5,6 +5,8 @@ import { throttle } from 'lodash';
 import { SocketFeed, DeltaType } from '../lib/constants';
 
 import OrderbookTable from './OrderbookTable';
+import Slider from '@material-ui/core/Slider';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles({
   wrapper: {
@@ -19,6 +21,14 @@ const Orderbook = () => {
   const classes = useStyles();
   const bids = useRef([]);
   const asks = useRef([]);
+
+  const [sliderValue, setSliderValue] = useState(10);
+
+  const handleSliderValue = (value: number) => {
+    if (value !== sliderValue) {
+      setSliderValue(value);
+    }
+  };
 
   const [, setRerender] = useState(1);
   const throttledRerender = useCallback(
@@ -90,15 +100,30 @@ const Orderbook = () => {
   }, []);
 
   return (
-    <div className={classes.wrapper}>
-      <OrderbookTable
-        deltaType={DeltaType.BIDS}
-        orders={bids.current.slice(0, 10)}
+    <div>
+      <Typography variant="body1" gutterBottom>
+        Adjust the number of displayed orders by using the slider.
+      </Typography>
+      <Slider
+        defaultValue={10}
+        getAriaValueText={handleSliderValue}
+        aria-labelledby="discrete-slider"
+        valueLabelDisplay="auto"
+        step={1}
+        marks
+        min={1}
+        max={20}
       />
-      <OrderbookTable
-        deltaType={DeltaType.ASKS}
-        orders={asks.current.slice(0, 10)}
-      />
+      <div className={classes.wrapper}>
+        <OrderbookTable
+          deltaType={DeltaType.BIDS}
+          orders={bids.current.slice(0, sliderValue)}
+        />
+        <OrderbookTable
+          deltaType={DeltaType.ASKS}
+          orders={asks.current.slice(0, sliderValue)}
+        />
+      </div>
     </div>
   );
 };
